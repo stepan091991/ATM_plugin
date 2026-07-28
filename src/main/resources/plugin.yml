@@ -1,0 +1,7 @@
+name: ATMMachine
+version: '0.1_Beta'
+main: org.stepan4ek.aTMMachine.ATMMachine
+api-version: '1.20'
+prefix: ATM
+authors: [ Stepan4ek ]
+website: https://github.com/stepan091991/ATM_plugin
