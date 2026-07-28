@@ -1,5 +1,5 @@
 name: ATMMachine
-version: '0.1_Beta'
+version: '0.01_Beta'
 main: org.stepan4ek.aTMMachine.ATMMachine
 api-version: '1.20'
 prefix: ATM
