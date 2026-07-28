@@ -3,6 +3,7 @@ package org.stepan4ek.ATMMachine;
 import org.stepan4ek.ATMMachine.commands.Commands;
 import org.stepan4ek.ATMMachine.data.DataManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.stepan4ek.ATMMachine.listeners.GUIListener;
 
 public class ATMMachine extends JavaPlugin {
     private static ATMMachine instance;
@@ -15,6 +16,8 @@ public class ATMMachine extends JavaPlugin {
 
         getCommand("atm").setExecutor(new Commands());
         getCommand("bank").setExecutor(new Commands());
+
+        getServer().getPluginManager().registerEvents(new GUIListener(), this);
 
         getLogger().info("§aATMMachine enabled!");
     }
