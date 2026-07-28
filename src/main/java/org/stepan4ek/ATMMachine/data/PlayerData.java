@@ -1,4 +1,4 @@
-package org.stepan4ek.aTMMachine.data;
+package org.stepan4ek.ATMMachine.data;
 
 import java.util.UUID;
 
@@ -16,10 +16,8 @@ public class PlayerData {
     public UUID getUuid() { return uuid; }
     public String getPlayerName() { return playerName; }
     public double getBalance() { return balance; }
-
     public void setPlayerName(String playerName) { this.playerName = playerName; }
     public void setBalance(double balance) { this.balance = balance; }
-
     public void addBalance(double amount) { this.balance += amount; }
     public boolean removeBalance(double amount) {
         if (this.balance >= amount) {
