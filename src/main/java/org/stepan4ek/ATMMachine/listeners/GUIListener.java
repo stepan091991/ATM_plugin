@@ -1,7 +1,5 @@
 package org.stepan4ek.ATMMachine.listeners;
 
-import org.bukkit.inventory.Inventory;
-import org.stepan4ek.ATMMachine.economy.EconomyManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,196 +8,163 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.stepan4ek.ATMMachine.economy.EconomyManager;
 
 public class GUIListener implements Listener {
     private final EconomyManager economy = EconomyManager.getInstance();
 
     @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player)) return;
+    public void onClick(InventoryClickEvent e) {
+        if (!(e.getWhoClicked() instanceof Player)) return;
+        Player p = (Player) e.getWhoClicked();
+        if (!e.getView().getTitle().equals("§6§lБанкомат")) return;
 
-        Player player = (Player) event.getWhoClicked();
-        String title = event.getView().getTitle();
+        // Handle Shift+Click - move all diamonds to GUI
+        if (e.isShiftClick() && e.getClickedInventory() != null &&
+                e.getClickedInventory().getType() == InventoryType.PLAYER) {
+            e.setCancelled(true);
+            ItemStack item = e.getCurrentItem();
+            if (item == null || item.getType() != Material.DIAMOND) {
+                p.sendMessage("§cYou can only put diamonds!");
+                return;
+            }
 
-        // Check GUI name
-        if (!title.equals("§6§lБанкомат")) return;
+            int total = item.getAmount();
+            int moved = 0;
+            Inventory gui = p.getOpenInventory().getTopInventory();
 
-        // Allow player inventory
-        if (event.getClickedInventory() != null &&
-                event.getClickedInventory().getType() == InventoryType.PLAYER) {
-            event.setCancelled(false);
+            // Find empty slots or slots with diamonds
+            for (int i = 0; i < gui.getSize() && total > 0; i++) {
+                ItemStack slot = gui.getItem(i);
+                if (slot == null) {
+                    int place = Math.min(total, 64);
+                    ItemStack copy = item.clone();
+                    copy.setAmount(place);
+                    gui.setItem(i, copy);
+                    total -= place;
+                    moved += place;
+                } else if (slot.getType() == Material.DIAMOND && slot.getAmount() < 64) {
+                    int space = 64 - slot.getAmount();
+                    int add = Math.min(total, space);
+                    slot.setAmount(slot.getAmount() + add);
+                    total -= add;
+                    moved += add;
+                }
+            }
+
+            if (moved > 0) {
+                item.setAmount(total > 0 ? total : 0);
+                if (total <= 0) e.setCurrentItem(null);
+                p.sendMessage("§aMoved §6" + moved + " §adiamonds!");
+            } else {
+                p.sendMessage("§cNo free slots available!");
+            }
             return;
         }
 
-        // Process ATM GUI
-        if (event.getClickedInventory() != null &&
-                event.getClickedInventory().getType() == InventoryType.CHEST) {
-
-            event.setCancelled(true);
-
-            if (event.getCurrentItem() == null) {
-                handleEmptySlotClick(event, player);
-                return;
-            }
-
-            ItemStack clickedItem = event.getCurrentItem();
-
-            if (clickedItem.getType() == Material.DIAMOND) {
-                event.setCancelled(false);
-                return;
-            }
-
-            String itemName = clickedItem.getItemMeta().getDisplayName();
-            handleGUIClick(player, itemName);
+        // Allow player inventory interaction
+        if (e.getClickedInventory() != null &&
+                e.getClickedInventory().getType() == InventoryType.PLAYER) {
+            e.setCancelled(false);
+            return;
         }
-    }
 
-    // Process click by empty slot
-    private void handleEmptySlotClick(InventoryClickEvent event, Player player) {
-        ItemStack cursor = event.getCursor();
+        // Handle ATM GUI interaction
+        if (e.getClickedInventory() != null &&
+                e.getClickedInventory().getType() == InventoryType.CHEST) {
+            e.setCancelled(true);
 
-        if (cursor != null && cursor.getType() == Material.DIAMOND) {
-            event.setCancelled(false);
-        } else {
-            event.setCancelled(true);
-            player.sendMessage("§cМожно класть только алмазы!");
-        }
-    }
-
-    // Process button clicks
-    private void handleGUIClick(Player player, String itemName) {
-        switch (itemName) {
-            case "§a§lПополнить":
-                // Counting all valute in GUI
-                int totalValute = 0;
-                Inventory inv = player.getOpenInventory().getTopInventory();
-
-                for (ItemStack item : inv.getContents()) {
-                    if (item != null && item.getType() == Material.DIAMOND) {
-                        totalValute += item.getAmount();
-                    }
+            // Empty slot - allow only diamonds
+            if (e.getCurrentItem() == null) {
+                ItemStack cursor = e.getCursor();
+                if (cursor != null && cursor.getType() == Material.DIAMOND) {
+                    e.setCancelled(false);
+                } else {
+                    p.sendMessage("§cYou can only put diamonds!");
                 }
+                return;
+            }
 
-                if (totalValute > 0) {
+            // Diamond in slot - allow taking it
+            if (e.getCurrentItem().getType() == Material.DIAMOND) {
+                e.setCancelled(false);
+                return;
+            }
 
-                    // Clear all valute in GUI
-                    for (int i = 0; i < inv.getSize(); i++) {
-                        ItemStack item = inv.getItem(i);
+            // Handle buttons
+            String name = e.getCurrentItem().getItemMeta().getDisplayName();
+            Inventory gui = e.getInventory();
+
+            switch (name) {
+                case "§a§lПополнить": // Deposit
+                    int totalDiamonds = 0;
+                    for (ItemStack item : gui.getContents()) {
                         if (item != null && item.getType() == Material.DIAMOND) {
-                            inv.setItem(i, null);
+                            totalDiamonds += item.getAmount();
                         }
                     }
-
-                    // Deposit valute to player
-                    economy.deposit(player, totalValute);
-                    player.sendMessage("§aВы пополнили баланс на §6" + totalValute + "!");
-                } else {
-                    player.sendMessage("§cПоложите валюту в пустые слоты!");
-                }
-                break;
-
-            case "§6§lБаланс":
-                player.sendMessage("§6Ваш баланс: §e" + economy.getBalance(player));
-                break;
-
-            case "§c§lСнять":
-                if (economy.withdraw(player, 1)) {
-                    player.sendMessage("§cСнята 1 валюта!");
-                    player.getInventory().addItem(new ItemStack(Material.DIAMOND, 1));
-                }
-                break;
-
-            case "§c§lЗакрыть":
-                // Return valute on close GUI
-                returnValute(player);
-                player.closeInventory();
-                break;
-        }
-    }
-
-    // Return valute on close GUI
-    private void returnValute(Player player) {
-        Inventory inv = player.getOpenInventory().getTopInventory();
-        boolean hasValute = false;
-
-        for (int i = 0; i < inv.getSize(); i++) {
-            ItemStack item = inv.getItem(i);
-            if (item != null && item.getType() == Material.DIAMOND) {
-                player.getInventory().addItem(item);
-                inv.setItem(i, null);
-                hasValute = true;
-            }
-        }
-
-        if (hasValute) {
-            player.sendMessage("§Валюта возвращена в инвентарь!");
-        }
-    }
-
-    // Restrict drag in ATM GUI
-    @EventHandler
-    public void onInventoryDrag(InventoryDragEvent event) {
-        if (!(event.getWhoClicked() instanceof Player)) return;
-
-        Player player = (Player) event.getWhoClicked();
-        String title = event.getView().getTitle();
-
-        if (!title.equals("§6§lБанкомат")) return;
-
-        for (Integer slot : event.getRawSlots()) {
-            if (slot >= 0 && slot <= 26) {
-                // Check if drag item is valute
-                ItemStack item = event.getNewItems().get(slot);
-                if (item != null && item.getType() == Material.DIAMOND) {
-                    // Allow in empty slot only
-                    if (event.getView().getTopInventory().getItem(slot) == null) {
-                        event.setCancelled(false);
+                    if (totalDiamonds > 0) {
+                        for (int i = 0; i < gui.getSize(); i++) {
+                            ItemStack item = gui.getItem(i);
+                            if (item != null && item.getType() == Material.DIAMOND) {
+                                gui.setItem(i, null);
+                            }
+                        }
+                        economy.deposit(p, totalDiamonds);
+                        p.sendMessage("§aDeposited §6" + totalDiamonds + " §acoins!");
                     } else {
-                        event.setCancelled(true);
-                        player.sendMessage("§cСлот занят!");
-                        return;
+                        p.sendMessage("§cPut diamonds in the slots!");
                     }
-                } else {
-                    event.setCancelled(true);
-                    if (item != null) {
-                        player.sendMessage("§cМожно класть только алмазы!");
+                    break;
+
+                case "§6§lБаланс": // Balance
+                    p.sendMessage("§6Your balance: §e" + economy.getBalance(p));
+                    break;
+
+                case "§c§lСнять": // Withdraw
+                    if (economy.withdraw(p, 1)) {
+                        p.getInventory().addItem(new ItemStack(Material.DIAMOND, 1));
+                        p.sendMessage("§cWithdrawn 1 coin!");
                     }
-                    return;
-                }
+                    break;
+
+                case "§c§lЗакрыть": // Close
+                    returnDiamonds(p);
+                    p.closeInventory();
+                    break;
             }
         }
-
-        // Allow drag in player inventory
-        event.setCancelled(false);
     }
 
-    // Process close GUI
-    @EventHandler
-    public void onInventoryClose(InventoryCloseEvent event) {
-        if (!(event.getPlayer() instanceof Player)) return;
-
-        Player player = (Player) event.getPlayer();
-        String title = event.getView().getTitle();
-
-        // Check GUI name
-        if (!title.equals("§6§lБанкомат")) return;
-
-        // Return valute on GUI close
-        Inventory inv = event.getInventory();
-        boolean hasValute = false;
-
-        for (int i = 0; i < inv.getSize(); i++) {
-            ItemStack item = inv.getItem(i);
+    // Return diamonds to player inventory
+    private void returnDiamonds(Player p) {
+        Inventory gui = p.getOpenInventory().getTopInventory();
+        for (ItemStack item : gui.getContents()) {
             if (item != null && item.getType() == Material.DIAMOND) {
-                player.getInventory().addItem(item);
-                inv.setItem(i, null);
-                hasValute = true;
+                p.getInventory().addItem(item);
             }
         }
+        gui.clear();
+    }
 
-        if (hasValute) {
-            player.sendMessage("§eАлмазы возвращены в инвентарь!");
-        }
+    // Return diamonds when GUI is closed
+    @EventHandler
+    public void onClose(InventoryCloseEvent e) {
+        if (!(e.getPlayer() instanceof Player)) return;
+        Player p = (Player) e.getPlayer();
+        if (!e.getView().getTitle().equals("§6§lБанкомат")) return;
+
+        returnDiamonds(p);
+        p.sendMessage("§eDiamonds returned to inventory!");
+    }
+
+    // Prevent dragging items in GUI
+    @EventHandler
+    public void onDrag(InventoryDragEvent e) {
+        if (!(e.getWhoClicked() instanceof Player)) return;
+        if (!e.getView().getTitle().equals("§6§lБанкомат")) return;
+        e.setCancelled(true);
     }
 }
