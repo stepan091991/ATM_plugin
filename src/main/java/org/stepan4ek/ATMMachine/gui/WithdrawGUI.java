@@ -8,13 +8,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.stepan4ek.ATMMachine.data.ConfigManager;
 
-public class MainGUI {
+public class WithdrawGUI {
     private final Inventory inventory;
     private final ConfigManager config;
 
-    public MainGUI() {
+    public WithdrawGUI() {
         this.config = ConfigManager.getInstance();
-        this.inventory = Bukkit.createInventory(null, config.getMainSize(), config.getMainTitle());
+        this.inventory = Bukkit.createInventory(null, config.getWithdrawSize(), config.getWithdrawTitle());
     }
 
     public void open(Player player) {
@@ -23,14 +23,14 @@ public class MainGUI {
     }
 
     private void fill() {
-        // Place buttons from config
-        for (ConfigManager.ButtonConfig button : config.getMainButtons()) {
+        // All buttons
+        for (ConfigManager.ButtonConfig button : config.getWithdrawButtons()) {
             inventory.setItem(button.getSlot(), button.create());
         }
 
-        // Empty slots
+        // Decoration
         for (int i = 0; i < inventory.getSize(); i++) {
-            if (inventory.getItem(i) == null && !config.getMainEmptySlots().contains(i)) {
+            if (inventory.getItem(i) == null) {
                 inventory.setItem(i, glass());
             }
         }

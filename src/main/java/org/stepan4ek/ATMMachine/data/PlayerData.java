@@ -17,7 +17,7 @@ public class PlayerData {
     public String getPlayerName() { return playerName; }
     public double getBalance() { return balance; }
     public void setPlayerName(String playerName) { this.playerName = playerName; }
-    public void setBalance(double balance) { this.balance = balance; }
+    //public void setBalance(double balance) { this.balance = balance; }
     public void addBalance(double amount) { this.balance += amount; }
     public boolean removeBalance(double amount) {
         if (this.balance >= amount) {

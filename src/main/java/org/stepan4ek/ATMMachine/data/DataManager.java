@@ -65,7 +65,7 @@ public class DataManager {
         }
     }
 
-    // Save all players data to files
+    // Save all players data
     public void saveAll() {
         cache.values().forEach(this::save);
     }

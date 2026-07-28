@@ -1,20 +1,23 @@
 name: ATMMachine
 version: '0.01_Beta'
 main: org.stepan4ek.ATMMachine.ATMMachine
-api-version: '1.20'
+api-version: '1.21'
 prefix: ATM
 authors: [ Stepan4ek ]
 website: https://github.com/stepan091991/ATM_plugin
 commands:
   atm:
-    description: Открыть банкомат
+    description: Open ATM
     usage: /atm
     aliases: [bank]
   bank:
-    description: Открыть банк
+    description: Open Bank
     usage: /bank
 
 permissions:
-  atm.use:
-    description: Разрешение на использование банкомата
-    default: true
+  atm.reload:
+    description: Reload config
+    default: op
+  atm.open:
+    description: Open ATM using the console
+    default: op

@@ -1,0 +1,212 @@
+# ATMMachine Configuration
+
+settings:
+  currency-name: "Coin"
+  currency-symbol: "$"
+  starting-balance: 0.0
+
+# CURRENCY ITEMS
+
+currency-items:
+  - material: "DIAMOND_ORE"
+    value: 1
+  - material: "DEEPSLATE_DIAMOND_ORE"
+    value: 1
+
+# GUI CONFIGURATION
+
+gui:
+  # MAIN GUI
+  main:
+    title: "§6§lБанкомат"
+    size: 27
+
+    # Slots where players can put currency items
+    empty-slots:
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+
+    # All buttons for main GUI
+    buttons:
+      - action: "balance"
+        material: "SUNFLOWER"
+        slot: 4
+        name: "§6§lБаланс"
+        lore:
+          - "§7Проверить баланс"
+        custom-model-data: 0
+
+      - action: "deposit"
+        material: "EMERALD"
+        slot: 20
+        name: "§a§lПополнить"
+        lore:
+          - "§7Положите валюту в слоты"
+          - "§7и нажмите для пополнения"
+        custom-model-data: 0
+
+      - action: "withdraw"
+        material: "REDSTONE"
+        slot: 22
+        name: "§c§lСнять"
+        lore:
+          - "§7Снять деньги"
+        custom-model-data: 0
+
+      - action: "transfer"
+        material: "GOLD_INGOT"
+        slot: 24
+        name: "§6§lПеревести"
+        lore:
+          - "§7Перевести игроку"
+        custom-model-data: 0
+
+      - action: "close"
+        material: "BARRIER"
+        slot: 26
+        name: "§c§lЗакрыть"
+        lore:
+          - "§7Закрыть меню"
+        custom-model-data: 0
+
+  # TRANSFER GUI
+  transfer:
+    title: "§6§lПеревод средств"
+    size: 54
+    players-per-page: 18
+
+    # Quick amount buttons
+    amounts:
+      - 1.0
+      - 5.0
+      - 10.0
+      - 25.0
+      - 50.0
+      - 100.0
+
+    # All buttons for transfer GUI
+    buttons:
+      - action: "confirm_transfer"
+        material: "LIME_DYE"
+        slot: 49
+        name: "§a§lПодтвердить"
+        lore:
+          - "§7Подтвердить перевод"
+        custom-model-data: 0
+
+      - action: "cancel"
+        material: "RED_DYE"
+        slot: 53
+        name: "§c§lОтмена"
+        lore:
+          - "§7Вернуться назад"
+        custom-model-data: 0
+
+  # WITHDRAW GUI
+  withdraw:
+    title: "§6§lВыбор суммы"
+    size: 27
+
+    # All buttons for withdraw GUI
+    buttons:
+      - action: "withdraw_amount"
+        material: "GOLD_NUGGET"
+        slot: 10
+        name: "§6§l1 Coin"
+        lore:
+          - "§7Снять 1 монету"
+        custom-model-data: 0
+        amount: 1.0
+
+      - action: "withdraw_amount"
+        material: "GOLD_NUGGET"
+        slot: 11
+        name: "§6§l5 Coins"
+        lore:
+          - "§7Снять 5 монет"
+        custom-model-data: 0
+        amount: 5.0
+
+      - action: "withdraw_amount"
+        material: "GOLD_INGOT"
+        slot: 12
+        name: "§6§l10 Coins"
+        lore:
+          - "§7Снять 10 монет"
+        custom-model-data: 0
+        amount: 10.0
+
+      - action: "withdraw_amount"
+        material: "GOLD_INGOT"
+        slot: 13
+        name: "§6§l25 Coins"
+        lore:
+          - "§7Снять 25 монет"
+        custom-model-data: 0
+        amount: 25.0
+
+      - action: "withdraw_amount"
+        material: "GOLD_BLOCK"
+        slot: 14
+        name: "§6§l50 Coins"
+        lore:
+          - "§7Снять 50 монет"
+        custom-model-data: 0
+        amount: 50.0
+
+      - action: "withdraw_amount"
+        material: "GOLD_BLOCK"
+        slot: 15
+        name: "§6§l100 Coins"
+        lore:
+          - "§7Снять 100 монет"
+        custom-model-data: 0
+        amount: 100.0
+
+      - action: "withdraw_amount"
+        material: "NETHERITE_INGOT"
+        slot: 16
+        name: "§6§l500 Coins"
+        lore:
+          - "§7Снять 500 монет"
+        custom-model-data: 0
+        amount: 500.0
+
+      - action: "confirm"
+        material: "LIME_DYE"
+        slot: 22
+        name: "§a§lПодтвердить"
+        lore:
+          - "§7Подтвердить снятие"
+        custom-model-data: 0
+
+      - action: "cancel"
+        material: "RED_DYE"
+        slot: 26
+        name: "§c§lОтмена"
+        lore:
+          - "§7Вернуться назад"
+        custom-model-data: 0
+
+# Messages
+
+messages:
+  no-permission: "§cУ вас нет прав!"
+  invalid-amount: "§cВведите корректную сумму!"
+  insufficient-funds: "§cНедостаточно средств!"
+  only-currency: "§cМожно класть только валюту!"
+  player-not-found: "§cИгрок не найден!"
+
+  deposited: "§aВы пополнили баланс на {amount} {currency}!"
+  withdrawn: "§cВы сняли {amount} {currency}!"
+  balance: "§6Ваш баланс: §e{balance} {currency}"
+
+  transfer-success: "§aПереведено {amount} {currency} игроку {player}!"
+  transfer-received: "§aПолучено {amount} {currency} от игрока {player}!"
+
+  currency-returned: "§eВалютные предметы возвращены в инвентарь!"
