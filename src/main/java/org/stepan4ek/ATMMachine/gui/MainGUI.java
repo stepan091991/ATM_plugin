@@ -14,7 +14,7 @@ public class MainGUI {
 
     public MainGUI() {
         // Create inventory
-        this.inventory = Bukkit.createInventory(null, 27, "§6§lГлавное меню");
+        this.inventory = Bukkit.createInventory(null, 54, "§f\uE000\uE000\uE000\uE000\uE000\uE000\uE000\uE000\uE001");
     }
 
     // Open inventory to player

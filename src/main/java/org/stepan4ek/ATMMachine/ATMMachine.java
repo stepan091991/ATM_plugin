@@ -1,5 +1,6 @@
 package org.stepan4ek.ATMMachine;
 
+import org.stepan4ek.ATMMachine.commands.Commands;
 import org.stepan4ek.ATMMachine.data.DataManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -11,6 +12,9 @@ public class ATMMachine extends JavaPlugin {
         instance = this;
 
         DataManager.getInstance();
+
+        getCommand("atm").setExecutor(new Commands());
+        getCommand("bank").setExecutor(new Commands());
 
         getLogger().info("§aATMMachine enabled!");
     }
