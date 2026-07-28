@@ -4,3 +4,4 @@ out/
 .idea/
 *.iml
 !gradle-wrapper.jar
+/src/main/java/org/stepan4ek/ATMMachine/tests/
