@@ -297,14 +297,12 @@ public class GUIListener implements Listener {
             case "withdraw_amount":
                 if (economy.getBalance(p) < amount) {
                     p.sendMessage(config.getInsufficientFunds());
-                    p.closeInventory();
                     return;
                 }
                 if (economy.withdraw(p, amount)) {
                     p.sendMessage(config.getWithdrawn(amount));
                     giveCurrency(p, amount);
                 }
-                p.closeInventory();
                 break;
 
             case "confirm":
