@@ -295,10 +295,37 @@ public class GUIListener implements Listener {
                 break;
 
             case "withdraw_amount":
+                // Check balance
                 if (economy.getBalance(p) < amount) {
                     p.sendMessage(config.getInsufficientFunds());
                     return;
                 }
+
+                // Check free slots in player inventory (ONLY storage slots)
+                int freeSlots = 0;
+                for (ItemStack item : p.getInventory().getStorageContents()) {
+                    if (item == null) freeSlots++;
+                }
+
+                ConfigManager.CurrencyItem currency = config.getCurrencyItemByValue(amount);
+                if (currency == null) {
+                    p.sendMessage("§cОшибка: валюта не найдена!");
+                    return;
+                }
+
+                int totalItems = (int) (amount / currency.getValue());
+                if (totalItems <= 0) {
+                    p.sendMessage("§cСумма слишком мала для выдачи!");
+                    return;
+                }
+
+                int slotsNeeded = (totalItems + 63) / 64;
+
+                if (freeSlots < slotsNeeded) {
+                    p.sendMessage("§cУ вас недостаточно свободных слотов в инвентаре!");
+                    return;
+                }
+
                 if (economy.withdraw(p, amount)) {
                     p.sendMessage(config.getWithdrawn(amount));
                     giveCurrency(p, amount);
