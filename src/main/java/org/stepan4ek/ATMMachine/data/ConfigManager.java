@@ -30,28 +30,29 @@ public class ConfigManager {
     private int transferPlayersPerPage;
     private List<Integer> transferPlayerSlots;
     private List<ButtonConfig> transferButtons;
+    private String chosedValuteSumm;
 
     // Withdraw GUI
     private String withdrawTitle;
     private int withdrawSize;
     private List<ButtonConfig> withdrawButtons;
-    private List<ButtonConfig> withdrawAmounts;
 
     // Currency
     private List<CurrencyItem> currencyItems;
 
     // General
     private String currencyName;
-    private String currencySymbol;
-    private double startingBalance;
 
     // Messages
     private String noPermission, invalidAmount, insufficientFunds;
     private String deposited, withdrawn, balanceMsg;
     private String onlyCurrency, playerNotFound;
     private String transferSuccess, transferReceived;
-    private String currencyReturned;
-
+    private String noSlots;
+    private String actionConfirmed;
+    private String putValute;
+    private String noSelectedPlayer;
+    private String chosedPlayer;
     private ConfigManager() {
         configFile = new File(ATMMachine.getInstance().getDataFolder(), "config.yml");
         if (!configFile.exists()) {
@@ -87,15 +88,12 @@ public class ConfigManager {
         withdrawTitle = config.getString("gui.withdraw.title", "§6§lВыбор суммы");
         withdrawSize = config.getInt("gui.withdraw.size", 27);
         withdrawButtons = loadButtons("gui.withdraw.buttons");
-        withdrawAmounts = withdrawButtons;
 
         // Currency
         currencyItems = loadCurrencyItems("currency-items");
 
         // General
         currencyName = config.getString("settings.currency-name", "Coin");
-        currencySymbol = config.getString("settings.currency-symbol", "$");
-        startingBalance = config.getDouble("settings.starting-balance", 100.0);
 
         // Messages
         noPermission = config.getString("messages.no-permission", "§cУ вас нет прав!");
@@ -108,7 +106,12 @@ public class ConfigManager {
         playerNotFound = config.getString("messages.player-not-found", "§cИгрок не найден!");
         transferSuccess = config.getString("messages.transfer-success", "§aПереведено {amount} {currency} игроку {player}!");
         transferReceived = config.getString("messages.transfer-received", "§aПолучено {amount} {currency} от игрока {player}!");
-        currencyReturned = config.getString("messages.currency-returned", "§eВалютные предметы возвращены в инвентарь!");
+        noSlots = config.getString("messages.withdrawn-no-slots", "§cУ вас недостаточно свободных слотов!");
+        actionConfirmed = config.getString("messages.action-confirmed", "§aДействие подтверждено!");
+        putValute = config.getString("messages.put-valute-to-empty-slots", "§cПоложите валюту в пустые слоты!");
+        noSelectedPlayer = config.getString("messages.no-selected-player", "§cВы не выбрали игрока!");
+        chosedValuteSumm = config.getString("messages.chosed-valute-summ", "§aВыбрана сумма: §e {amount} {currency}!");
+        chosedPlayer = config.getString("messages.chosed-player", "§aВыбран игрок: §e {player}!");
     }
 
     private List<ButtonConfig> loadButtons(String path) {
@@ -306,25 +309,29 @@ public class ConfigManager {
     public String getWithdrawTitle() { return withdrawTitle; }
     public int getWithdrawSize() { return withdrawSize; }
     public List<ButtonConfig> getWithdrawButtons() { return withdrawButtons; }
-    //public List<ButtonConfig> getWithdrawAmounts() { return withdrawAmounts; }
-
-    //public List<CurrencyItem> getCurrencyItems() { return currencyItems; }
     public String getCurrencyName() { return currencyName; }
-    //public double getStartingBalance() { return startingBalance; }
-
-    //public String getNoPermission() { return noPermission; }
-    //public String getInvalidAmount() { return invalidAmount; }
+    public String getNoPermission() { return noPermission; }
+    public String getInvalidAmount() { return invalidAmount; }
     public String getInsufficientFunds() { return insufficientFunds; }
     public String getOnlyCurrency() { return onlyCurrency; }
-    //public String getPlayerNotFound() { return playerNotFound; }
-    //public String getCurrencyReturned() { return currencyReturned; }
+    public String getPlayerNotFound() { return playerNotFound; }
+    public String getNoSlots() {return noSlots;}
+    public String getActionConfirmed() { return actionConfirmed; }
+    public String getPutValute() { return putValute; }
+    public String getNoSelectedPlayer() { return noSelectedPlayer; }
+
+    public String getChosedPlayer(String player) { return chosedPlayer.replace("{player}", player); }
+
+    public String getChosedValuteSumm(double amount) {
+        return chosedValuteSumm.replace("{amount}", String.valueOf(amount)).replace("{currency}", currencyName);
+    }
 
     public String getDeposited(double amount) {
         return deposited.replace("{amount}", String.valueOf(amount)).replace("{currency}", currencyName);
     }
 
-    public String getWithdrawn(double amount) {
-        return withdrawn.replace("{amount}", String.valueOf(amount)).replace("{currency}", currencyName);
+    public String getWithdrawn(double amount, double balance) {
+        return withdrawn.replace("{amount}", String.valueOf(amount)).replace("{currency}", currencyName).replace("{balance}", String.valueOf(balance));
     }
 
     public String getBalance(double amount) {

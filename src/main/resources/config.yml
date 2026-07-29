@@ -197,16 +197,19 @@ gui:
 
 messages:
   no-permission: "§cУ вас нет прав!"
-  invalid-amount: "§cВведите корректную сумму!"
+  invalid-amount: "§cВы не выбрали сумму!"
   insufficient-funds: "§cНедостаточно средств!"
   only-currency: "§cМожно класть только валюту!"
   player-not-found: "§cИгрок не найден!"
-
   deposited: "§aВы пополнили баланс на {amount} {currency}!"
-  withdrawn: "§cВы сняли {amount} {currency}!"
+  withdrawn: "§cВы сняли {amount} {currency} Остаток {balance}!"
   balance: "§6Ваш баланс: §e{balance} {currency}"
-
   transfer-success: "§aПереведено {amount} {currency} игроку {player}!"
   transfer-received: "§aПолучено {amount} {currency} от игрока {player}!"
 
-  currency-returned: "§eВалютные предметы возвращены в инвентарь!"
+  withdrawn-no-slots: "§cУ вас недостаточно свободных слотов в инвентаре!"
+  action-confirmed: "§aДействие подтверждено!"
+  put-valute-to-empty-slots: "§cПоложите валюту в пустые слоты!"
+  no-selected-player: "§cВы не выбрали игрока!"
+  chosed-valute-summ: "§aВыбрана сумма: §e {amount} {currency}!"
+  chosed-player: "§aВыбран игрок: §e {player}!"

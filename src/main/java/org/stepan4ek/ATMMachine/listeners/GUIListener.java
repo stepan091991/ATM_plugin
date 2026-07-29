@@ -163,7 +163,7 @@ public class GUIListener implements Listener {
     }
 
     private void handleButtonClick(Player p, String name, String title, InventoryClickEvent e) {
-        // === MAIN GUI ===
+        // Main GUI
         if (title.equals(config.getMainTitle())) {
             for (ConfigManager.ButtonConfig button : config.getMainButtons()) {
                 if (name.equals(button.getName())) {
@@ -185,7 +185,7 @@ public class GUIListener implements Listener {
                     Player target = Bukkit.getPlayer(meta.getOwningPlayer().getName());
                     if (target != null && target.isOnline()) {
                         selectedPlayer.put(p, target);
-                        p.sendMessage("§aВыбран игрок: §e" + target.getName());
+                        p.sendMessage(config.getChosedPlayer(target.getName()));
                     }
                 }
                 return;
@@ -212,7 +212,7 @@ public class GUIListener implements Listener {
                     if (action.equals("select_amount")) {
                         double amount = button.getAmount();
                         selectedAmount.put(p, amount);
-                        p.sendMessage("§aВыбрана сумма: §e" + amount + " " + config.getCurrencyName());
+                        p.sendMessage(config.getChosedValuteSumm(amount));
                         return;
                     }
 
@@ -222,15 +222,15 @@ public class GUIListener implements Listener {
                         Double amount = selectedAmount.get(p);
 
                         if (target == null) {
-                            p.sendMessage("§cВы не выбрали игрока!");
+                            p.sendMessage(config.getNoSelectedPlayer());
                             return;
                         }
                         if (amount == null) {
-                            p.sendMessage("§cВы не выбрали сумму!");
+                            p.sendMessage(config.getInvalidAmount());
                             return;
                         }
                         if (!target.isOnline()) {
-                            p.sendMessage("§cИгрок вышел!");
+                            p.sendMessage(config.getPlayerNotFound());
                             selectedPlayer.remove(p);
                             return;
                         }
@@ -301,7 +301,7 @@ public class GUIListener implements Listener {
                     return;
                 }
 
-                // Check free slots in player inventory (ONLY storage slots)
+                // Check free slots in player inventory
                 int freeSlots = 0;
                 for (ItemStack item : p.getInventory().getStorageContents()) {
                     if (item == null) freeSlots++;
@@ -309,31 +309,29 @@ public class GUIListener implements Listener {
 
                 ConfigManager.CurrencyItem currency = config.getCurrencyItemByValue(amount);
                 if (currency == null) {
-                    p.sendMessage("§cОшибка: валюта не найдена!");
                     return;
                 }
 
                 int totalItems = (int) (amount / currency.getValue());
                 if (totalItems <= 0) {
-                    p.sendMessage("§cСумма слишком мала для выдачи!");
                     return;
                 }
 
                 int slotsNeeded = (totalItems + 63) / 64;
 
                 if (freeSlots < slotsNeeded) {
-                    p.sendMessage("§cУ вас недостаточно свободных слотов в инвентаре!");
+                    p.sendMessage(config.getNoSlots());
                     return;
                 }
 
                 if (economy.withdraw(p, amount)) {
-                    p.sendMessage(config.getWithdrawn(amount));
+                    p.sendMessage(config.getWithdrawn(amount, economy.getBalance(p)));
                     giveCurrency(p, amount);
                 }
                 break;
 
             case "confirm":
-                p.sendMessage("§aДействие подтверждено!");
+                p.sendMessage(config.getActionConfirmed());
                 p.closeInventory();
                 break;
 
@@ -352,7 +350,7 @@ public class GUIListener implements Listener {
             economy.deposit(p, total);
             p.sendMessage(config.getDeposited(total));
         } else {
-            p.sendMessage("§cПоложите валюту в пустые слоты!");
+            p.sendMessage(config.getPutValute());
         }
     }
 
