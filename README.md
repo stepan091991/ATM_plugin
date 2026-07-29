@@ -1,1 +1,1 @@
-Minecraft ATM machine plugin
+Minecraft ATM machine plugin.
