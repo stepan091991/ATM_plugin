@@ -242,7 +242,6 @@ public class GUIListener implements Listener {
                         if (economy.transfer(p, target, amount)) {
                             p.sendMessage(config.getTransferSuccess(amount, target.getName()));
                             target.sendMessage(config.getTransferReceived(amount, p.getName()));
-                            p.closeInventory();
                         }
                         return;
                     }
