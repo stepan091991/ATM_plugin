@@ -27,4 +27,5 @@ public class PlayerData {
         return false;
     }
     public boolean hasEnough(double amount) { return this.balance >= amount; }
+    public void setBalance(double balance) {this.balance = balance;}
 }

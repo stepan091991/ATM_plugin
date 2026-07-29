@@ -21,3 +21,6 @@ permissions:
   atm.open:
     description: Open ATM using the console
     default: op
+  atm.admin:
+    description: Admin permissions
+    default: op

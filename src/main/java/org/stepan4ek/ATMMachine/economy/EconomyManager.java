@@ -54,4 +54,12 @@ public class EconomyManager {
         dataManager.save(toData);
         return true;
     }
+
+    public void setBalance(Player player, double amount) {
+        if (amount < 0) amount = 0;
+
+        PlayerData data = dataManager.getOrCreate(player);
+        data.setBalance(amount);
+        dataManager.save(data);
+    }
 }
